@@ -1,0 +1,44 @@
+// ==UserScript==
+// @name         kay anri
+// @namespace    http://ewan.ewan.ewan
+// @version      2026-03-02
+// @description  adju module qol
+// @author       anri
+// @match        http://172.21.54.44/*
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @grant        none
+// ==/UserScript==
+
+//config
+//vr
+const name = "Insert Name Here"
+const fontSize = 12
+//f10
+const enableF10Auto = false
+
+// VR Name and Date
+const buttonPrintVR = document.querySelector("#print_div > input[type=button]")
+if(buttonPrintVR){
+   const dateToday = new Date()
+   const day = dateToday.getDate()
+   const month = dateToday.toLocaleString('default', {month:'short'})
+   const year = dateToday.getFullYear()
+   document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(3)").innerHTML = `Reviewed: <u style='font-size:${fontSize}px'>${name}</u><br>Date: <u style='font-size:${fontSize}px'>${month}/${day}/${year}</u>`
+}
+
+//F10 auto check
+function saveCheck(){
+	document.getElementById("CHBXSOAPRESENT_CHECKBOX").checked=true
+	document.getElementById("CHBXAPRPRESENT_CHECKBOX").checked=true
+	document.getElementById("CHBXCSFPRESENT_CHECKBOX").checked=true
+	document.querySelector("#BTNSAVE").click()
+}
+const buttonF10 = document.querySelector("#BTNSAVE")
+if(buttonF10 && enableF10Auto){
+   window.addEventListener('keyup', function (e) {
+       if(e.key == 'F10'){
+       e.stopImmediatePropagation()
+       saveCheck()
+     }
+   }, true); //useCapture
+}
