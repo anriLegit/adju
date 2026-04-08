@@ -4,7 +4,25 @@
 // @version      2026-03-02
 // @description  adju module qol
 // @author       anri
+// @match        http://172.21.54.28/*
+// @match        http://172.21.54.29/*
+// @match        http://172.21.54.30/*
+// @match        http://172.21.54.31/*
+// @match        http://172.21.54.32/*
+// @match        http://172.21.54.33/*
+// @match        http://172.21.54.34/*
+// @match        http://172.21.54.35/*
+// @match        http://172.21.54.36/*
+// @match        http://172.21.54.38/*
+// @match        http://172.21.54.39/*
+// @match        http://172.21.54.40/*
+// @match        http://172.21.54.41/*
+// @match        http://172.21.54.42/*
+// @match        http://172.21.54.43/*
 // @match        http://172.21.54.44/*
+// @match        http://172.21.54.45/*
+// @match        http://172.21.54.46/*
+// @match        http://172.21.54.47/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
 // ==/UserScript==
