@@ -36,27 +36,79 @@ const enableF10Auto = false
 
 // VR Name and Date
 const buttonPrintVR = document.querySelector("#print_div > input[type=button]")
+
 if(buttonPrintVR){
    const dateToday = new Date()
    const day = dateToday.getDate()
    const month = dateToday.toLocaleString('default', {month:'short'})
    const year = dateToday.getFullYear()
    document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(3)").innerHTML = `Reviewed: <u style='font-size:${fontSize}px'>${name}</u><br>Date: <u style='font-size:${fontSize}px'>${month}/${day}/${year}</u>`
+   window.addEventListener('keyup', function (e) {
+       if(e.key == '`'){
+           e.preventDefault()
+           const mprRemark = prompt("MPR remark")
+           if(mprRemark){
+               const mprSpan = document.createElement("span")
+               mprSpan.innerText = "FOR MPR"
+               mprSpan.setAttribute("style", "font-size: 18px;")
+               document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(2)").appendChild(document.createElement("br"))
+               document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(2)").appendChild(mprSpan)
+               document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(2)").appendChild(document.createElement("br"))
+               const mprRemarkSpan = document.createElement("span")
+               mprRemarkSpan.innerText = mprRemark
+               mprRemarkSpan.setAttribute("style", "font-size: 16px;")
+               document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(2)").appendChild(mprRemarkSpan)
+           }
+       }
+   }, true); //useCapture
 }
 
-//F10 auto check
+
+
+//Adju Module
+
 function saveCheck(){
 	document.getElementById("CHBXSOAPRESENT_CHECKBOX").checked=true
 	document.getElementById("CHBXAPRPRESENT_CHECKBOX").checked=true
 	document.getElementById("CHBXCSFPRESENT_CHECKBOX").checked=true
 	document.querySelector("#BTNSAVE").click()
 }
+
 const buttonF10 = document.querySelector("#BTNSAVE")
+
 if(buttonF10 && enableF10Auto){
-   window.addEventListener('keyup', function (e) {
-       if(e.key == 'F10'){
-       e.stopImmediatePropagation()
-       saveCheck()
-     }
+    window.addEventListener('keyup', function (e) {
+        if(e.key == 'F10'){
+            e.stopImmediatePropagation()
+            saveCheck()
+        }
+        if(e.key == 'F1'){
+            e.stopImmediatePropagation()
+            if(document.querySelector("#benefitServiceChargesModal").getAttribute('style') == 'display: block;'){
+                const iFrame = document.querySelector("#benefitServiceChargesWebAppIframe")
+                const iFrameDoc = iFrame.contentDocument || iFrame.contentWindow.document
+                iFrameDoc.querySelector("#inputContainer > div:nth-child(5) > div.col-sm-8.col-sm-offset-1 > span > span.selection > span > ul > li > input").focus()
+                iFrame.contentWindow.addEventListener('keyup', function (e) {
+                    if(e.key == 'Escape'){
+                        //$('#benefitServiceChargesModal').modal('hide');
+                        document.querySelector("#benefitServiceChargesModalDialog > div > div.modal-footer > button").click()
+                    }
+                    if(e.key == 'F2'){
+                        iFrameDoc.querySelector("#btn_update_preAuthChecklist").focus()
+                    }
+                })
+            }else{
+                document.querySelector("#CHBXPENDINGDUETOSYSTEMISSUES_CHECKBOX").checked = false
+                showBenefitServiceCharges()
+            }
+       }
+       if(e.key == 'Escape'){
+           e.stopImmediatePropagation()
+           if(document.querySelector("#benefitServiceChargesModal").getAttribute('style') == 'display: block;'){
+               //$('#benefitServiceChargesModal').modal('hide');
+               document.querySelector("#benefitServiceChargesModalDialog > div > div.modal-footer > button").click()
+           }
+       }
    }, true); //useCapture
 }
+
