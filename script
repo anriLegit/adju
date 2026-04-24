@@ -44,7 +44,7 @@ if(buttonPrintVR){
    const year = dateToday.getFullYear()
    document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(3)").innerHTML = `Reviewed: <u style='font-size:${fontSize}px'>${name}</u><br>Date: <u style='font-size:${fontSize}px'>${month}/${day}/${year}</u>`
    window.addEventListener('keyup', function (e) {
-       if(e.key == '`'){
+       if(e.key == '~'){
            e.preventDefault()
            const mprRemark = prompt("MPR remark")
            if(mprRemark){
@@ -59,6 +59,19 @@ if(buttonPrintVR){
                mprRemarkSpan.setAttribute("style", "font-size: 16px;")
                document.querySelector("#validation_report > table > tbody > tr:nth-child(42) > td:nth-child(2)").appendChild(mprRemarkSpan)
            }
+       }
+       if(e.key == '`'){
+           const strHciA = document.querySelector("#LBLHCIACRAMOUNTA").innerText.replaceAll(",","")
+           const strHciB = document.querySelector("#LBLHCIACRAMOUNTB").innerText.replaceAll(",","")
+           const totalHCI = Number(strHciA) + Number(strHciB)
+           const strProfA = document.querySelector("#LBLPFACRAMOUNTA").innerText.replaceAll(",","")
+           const strProfB = document.querySelector("#LBLPFACRAMOUNTB").innerText.replaceAll(",","")
+           const totalProf = Number(strProfA) + Number(strProfB)
+           const strHciProf = `
+           HCI: ${totalHCI.toLocaleString("en-us", {useGrouping: true, minimumFractionDigits: 2})}\n
+           Prf: ${totalProf.toLocaleString("en-us", {useGrouping: true, minimumFractionDigits: 2})}
+           `
+           alert(strHciProf)
        }
    }, true); //useCapture
 }
