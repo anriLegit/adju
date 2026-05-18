@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         kay anri
-// @namespace    http://ewan.ewan.ewan
+// @namespace    http://tampermonkey.net/
 // @version      2026-03-02
-// @description  adju module qol
+// @description  try to take over the world!
 // @author       anri
 // @match        http://172.21.54.28/*
 // @match        http://172.21.54.29/*
@@ -13,6 +13,7 @@
 // @match        http://172.21.54.34/*
 // @match        http://172.21.54.35/*
 // @match        http://172.21.54.36/*
+// @match        http://172.21.54.37/*
 // @match        http://172.21.54.38/*
 // @match        http://172.21.54.39/*
 // @match        http://172.21.54.40/*
@@ -30,7 +31,7 @@
 //config
 //vr
 const name = "Insert Name Here"
-const fontSize = 12
+const fontSize = 16
 //f10
 const enableF10Auto = false
 
@@ -125,3 +126,21 @@ if(buttonF10 && enableF10Auto){
    }, true); //useCapture
 }
 
+//Esoa
+const buttonEsoaPrint= document.querySelector("#printPDF")
+
+if(buttonEsoaPrint){
+   window.addEventListener('keyup', function (e) {
+       if(e.key == '`'){
+           const hciBenNum = Number(document.querySelector("#eSOAtable > div:nth-child(2) > table > tbody > tr.td_firstcol > td:nth-child(4)").innerText.replaceAll("(","").replaceAll(")","").replaceAll(",",""))
+           const profBenNum = Number(document.querySelector("#eSOAtable > div:nth-child(3) > table > tbody > tr:last-child > td:nth-child(4)").innerText.replaceAll("(","").replaceAll(")","").replaceAll(",",""))
+           const totalEsoa = hciBenNum + profBenNum
+           const strEsoaOut = `
+           HCI: ${hciBenNum.toLocaleString("en-us", {useGrouping: true, minimumFractionDigits: 2})}\n
+           Prf: ${profBenNum.toLocaleString("en-us", {useGrouping: true, minimumFractionDigits: 2})}\n
+           Ttl: ${totalEsoa.toLocaleString("en-us", {useGrouping: true, minimumFractionDigits: 2})}
+           `
+           alert(strEsoaOut)
+       }
+   }, true); //useCapture
+}
