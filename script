@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         kay anri
-// @namespace    http://tampermonkey.net/
+// @namespace    http://ewan.ewan.ewan
 // @version      2026-03-02
-// @description  try to take over the world!
+// @description  adju module qol
 // @author       anri
 // @match        http://172.21.54.28/*
 // @match        http://172.21.54.29/*
