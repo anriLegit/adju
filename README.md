@@ -1,2 +1,2 @@
 # adju
-adju module qol
+adju qol
