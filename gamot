@@ -1,0 +1,37 @@
+// ==UserScript==
+// @name         kay anri gamot
+// @namespace    ewan
+// @version      2026-05-29
+// @description  gamot qol
+// @author       anri
+// @match        *://*/dashboard/claims/print/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=26.175
+// @grant        none
+// ==/UserScript==
+
+//config
+//PhilHealth GAMOT Claims Report
+const name = "Insert Name Here"
+const fontSize = 20
+
+
+if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
+    const appendDiv = document.createElement("div")
+    appendDiv.setAttribute("style", "display: flex; align-items: left; justify-content: center;flex-direction: column !important;")
+    const appendP = document.createElement("p")
+    appendP.setAttribute("style", `font-size:${fontSize}px`)
+    appendP.appendChild(document.createTextNode(`Reviewed: ${name}`))
+    /**
+    appendP.appendChild(document.createElement("br"))
+    const dateToday = new Date()
+    const day = dateToday.getDate()
+    const month = dateToday.toLocaleString('default', {month:'short'})
+    const year = dateToday.getFullYear()
+    appendP.appendChild(document.createTextNode(`Date: ${month}/${day}/${year}`))
+    **/
+    const appendSpan = document.createElement("span")
+    appendSpan.appendChild(appendP)
+    appendDiv.appendChild(appendSpan)
+    const last = document.querySelector("#printArea > div.content > div:last-child")
+    last.after(appendDiv)
+}
