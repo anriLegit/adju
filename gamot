@@ -5,6 +5,7 @@
 // @description  gamot qol
 // @author       anri
 // @match        *://*/dashboard/claims/print/*
+// @match        *://*/dashboard/validation/view/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=26.175
 // @grant        none
 // ==/UserScript==
@@ -16,11 +17,14 @@ const fontSize = 20
 
 
 if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
+    const gacn = document.querySelector("#breadcrumb_header > li:nth-child(2)").innerText
+    document.title = gacn
+
     const appendDiv = document.createElement("div")
     appendDiv.setAttribute("style", "display: flex; align-items: left; justify-content: center;flex-direction: column !important;")
     const appendP = document.createElement("p")
     appendP.setAttribute("style", `font-size:${fontSize}px`)
-    appendP.appendChild(document.createTextNode(`Reviewed: ${name}`))
+    appendP.appendChild(document.createTextNode(`Adjudicated by: ${name}`))
     /**
     appendP.appendChild(document.createElement("br"))
     const dateToday = new Date()
@@ -35,3 +39,23 @@ if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
     const last = document.querySelector("#printArea > div.content > div:last-child")
     last.after(appendDiv)
 }
+
+
+if(window.location.pathname.indexOf("/dashboard/validation/view")>=0){
+    const gatn = document.querySelector("body > div.base-layout > div:nth-child(3) > div > div:nth-child(1) > h4").innerText
+    document.title = gatn
+    /**
+    const appendP = document.createElement("p")
+    appendP.setAttribute("style", `font-size:${fontSize}px`)
+    appendP.appendChild(document.createTextNode(`Reviewed: ${name}`))
+    document.querySelector("#validation-report-view").appendChild(appendP)
+    **/
+}
+
+
+
+
+
+
+
+
