@@ -39,6 +39,8 @@ const enableF10Auto = false
 const buttonPrintVR = document.querySelector("#print_div > input[type=button]")
 
 if(buttonPrintVR){
+   const serNum = document.querySelector("#LBLSERIESNO").innerText
+   document.title = serNum
    const dateToday = new Date()
    const day = dateToday.getDate()
    const month = dateToday.toLocaleString('default', {month:'short'})
