@@ -16,7 +16,7 @@
 const name = "Insert Name Here"
 const fontSize = 20
 
-const extraFeatKo = true;
+const extraFeatKo = false;
 
 
 if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
