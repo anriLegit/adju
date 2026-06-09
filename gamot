@@ -6,6 +6,7 @@
 // @author       anri
 // @match        *://*/dashboard/claims/print/*
 // @match        *://*/dashboard/validation/view/*
+// @match        *://*/dashboard/claims/view/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=26.175
 // @grant        none
 // ==/UserScript==
@@ -14,6 +15,8 @@
 //PhilHealth GAMOT Claims Report
 const name = "Insert Name Here"
 const fontSize = 20
+
+const extraFeatKo = true;
 
 
 if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
@@ -50,8 +53,65 @@ if(window.location.pathname.indexOf("/dashboard/validation/view")>=0){
     appendP.appendChild(document.createTextNode(`Reviewed: ${name}`))
     document.querySelector("#validation-report-view").appendChild(appendP)
     **/
+
+    function checkAllPassGatn(){
+        const sec = document.querySelector("#validation-report-view > section:nth-child(9)")
+        const rowsSec = sec.querySelectorAll("div.row")
+        for(let i = 1; i<rowsSec.length; i++){
+            const row = rowsSec[i]
+            const result = row.querySelector("div:last-child > p").innerText
+            if(result!=="PASS"){
+                return false
+            }
+        }
+        return true
+    }
+    if(extraFeatKo){
+        window.addEventListener('keyup', function (e) {
+            if(e.key == '`'){
+                if(checkAllPassGatn()){
+                    alert("Pass")
+                }else{
+                    alert("REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW")
+                }
+            }
+            if(e.key == '1'){
+                const nameBenef = document.querySelector("#validation-report-view > section:nth-child(3) > div:nth-child(1) > p").innerText
+                const gatn = document.querySelector("body > div.base-layout > div:nth-child(3) > div > div:nth-child(1) > h4").innerText
+                alert(`${gatn}	${nameBenef}`)
+            }
+        }, true)
+    }
 }
 
+
+if(window.location.pathname.indexOf("/dashboard/claims/view")>=0 && extraFeatKo){
+    const gatnTable = document.querySelector("#page-content-wrapper > div > div.container-fluid > div.card.mb-3 > div.card-body.p-0.table-responsive.table-responsive-sm.custom-table-wrapper > table")
+    const header = gatnTable.querySelector("thead")
+    const thBut = document.createElement("th")
+    thBut.setAttribute("scope","col")
+    thBut.innerText = "bukas lahat"
+    header.querySelector("tr").appendChild(thBut)
+
+    const rows = gatnTable.querySelector("tbody").rows
+    for(let i = 0; i<rows.length; i++){
+        const row = rows[i]
+        const gatn = row.querySelector("td:nth-child(1) > a").innerText
+        const linkGVR = row.querySelector("td:nth-child(1) > a").getAttribute("href")
+        const linkAvail = row.querySelector("td:nth-child(10) > a").getAttribute("href")
+        const linkPres = row.querySelector("td:nth-child(11) > a").getAttribute("href")
+        console.log(linkGVR, linkAvail, linkPres)
+        const but = document.createElement("button")
+        but.setAttribute("class", "no-loader")
+        but.innerText = gatn
+        but.addEventListener("click", () => {
+            window.open(linkGVR)
+            window.open(linkAvail)
+            window.open(linkPres)
+        })
+        row.appendChild(but)
+    }
+}
 
 
 
