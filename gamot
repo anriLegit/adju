@@ -1,0 +1,400 @@
+// ==UserScript==
+// @name         kay anri gamot
+// @namespace    ewan
+// @version      2026-05-29
+// @description  gamot qol
+// @author       anri
+// @match        *://*/dashboard/claims/print/*
+// @match        *://*/dashboard/validation/view/*
+// @match        *://*/dashboard/claims/view/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=26.175
+// @grant        none
+// ==/UserScript==
+
+//config
+//PhilHealth GAMOT Claims Report
+const name = "Insert Name Here"
+const fontSize = 20
+
+const extraFeatKo = true;
+const extraFeatAvail = true
+const extraFeatPres = true
+
+
+function checkAllPassGatn(document){
+    const sec = document.querySelector("#validation-report-view > section:nth-child(9)")
+    const rowsSec = sec.querySelectorAll("div.row")
+    for(let i = 1; i<rowsSec.length; i++){
+        const row = rowsSec[i]
+        const result = row.querySelector("div:last-child > p").innerText
+        if(result!=="PASS"){
+            return false
+        }
+    }
+    return true
+}
+
+if(window.location.pathname.indexOf("/dashboard/claims/print")>=0){
+    const gacn = document.querySelector("#breadcrumb_header > li:nth-child(2)").innerText
+    document.title = gacn
+
+    const appendDiv = document.createElement("div")
+    appendDiv.setAttribute("style", "display: flex; align-items: left; justify-content: center;flex-direction: column !important;")
+    const appendP = document.createElement("p")
+    appendP.setAttribute("style", `font-size:${fontSize}px`)
+    appendP.appendChild(document.createTextNode(`Adjudicated by: ${name}`))
+    /**
+    appendP.appendChild(document.createElement("br"))
+    const dateToday = new Date()
+    const day = dateToday.getDate()
+    const month = dateToday.toLocaleString('default', {month:'short'})
+    const year = dateToday.getFullYear()
+    appendP.appendChild(document.createTextNode(`Date: ${month}/${day}/${year}`))
+    **/
+    const appendSpan = document.createElement("span")
+    appendSpan.appendChild(appendP)
+    appendDiv.appendChild(appendSpan)
+    const last = document.querySelector("#printArea > div.content > div:last-child")
+    last.after(appendDiv)
+
+    window.print()
+}
+
+
+if(window.location.pathname.indexOf("/dashboard/validation/view")>=0){
+    const gatn = document.querySelector("body > div.base-layout > div:nth-child(3) > div > div:nth-child(1) > h4").innerText
+    document.title = gatn
+    /**
+    const appendP = document.createElement("p")
+    appendP.setAttribute("style", `font-size:${fontSize}px`)
+    appendP.appendChild(document.createTextNode(`Reviewed: ${name}`))
+    document.querySelector("#validation-report-view").appendChild(appendP)
+    **/
+    if(extraFeatKo){
+        window.addEventListener('keyup', function (e) {
+            if(e.key == '`'){
+                if(checkAllPassGatn(document)){
+                    alert("Pass")
+                }else{
+                    alert("REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW REVIEW")
+                }
+            }
+            if(e.key == '1'){
+                const nameBenef = document.querySelector("#validation-report-view > section:nth-child(3) > div:nth-child(1) > p").innerText
+                const gatn = document.querySelector("body > div.base-layout > div:nth-child(3) > div > div:nth-child(1) > h4").innerText
+                const strOut = `${gatn}	${nameBenef}`
+                const tempTexArea = document.createElement("textarea")
+                document.body.appendChild(tempTexArea)
+                tempTexArea.innerText = strOut
+                tempTexArea.select()
+                document.execCommand("copy")
+                document.body.removeChild(tempTexArea)
+                alert("Copied")
+
+            }
+        }, true)
+    }
+}
+
+
+
+if(window.location.pathname.indexOf("/dashboard/claims/view")>=0 && extraFeatKo && window.location.pathname.indexOf("/dashboard/claims/view/prescription")<0 && window.location.pathname.indexOf("/dashboard/claims/view/availment_form")<0){
+    async function submitFormApprove(approve){
+        const valPending = "pending_approval"
+        const valApproved = "approved"
+        const valStatus = approve ? valApproved : valPending
+
+
+        const form = document.querySelector("#changeStatusModal > div > div > form")
+        const method = form.getAttribute("method")
+        const action = form.getAttribute("action")
+
+        const name  = "status"
+        const formData = new FormData(form)
+        formData.set(name, valStatus)
+
+
+        try{
+            const response = await fetch(action, {
+                method: method,
+                body: formData
+            })
+            console.log(await response)
+        }catch (e){
+            console.error(e)
+        }
+    }
+    window.addEventListener('keydown', function (e) {
+        if(e.key == 'F1'){
+            e.preventDefault();
+            const approve = confirm("APPROVE GACN?")
+            if(approve){
+                submitFormApprove(true)
+                window.location.replace(window.location.href)
+            }
+        }
+        if(e.key == 'F2'){
+            e.preventDefault();
+            const pending = confirm("Set GACN as PENDING?")
+            if(pending){
+                submitFormApprove(false)
+                window.location.replace(window.location.href)
+            }
+        }
+        if(e.key == '`'){
+            const butPrint = document.querySelector("#printButton")
+            butPrint.click()
+        }
+    }, true)
+    const gatnTable = document.querySelector("#page-content-wrapper > div > div.container-fluid > div.card.mb-3 > div.card-body.p-0.table-responsive.table-responsive-sm.custom-table-wrapper > table")
+    const header = gatnTable.querySelector("thead")
+    const thBut = document.createElement("th")
+    thBut.setAttribute("scope","col")
+    thBut.innerText = "bukas lahat"
+    header.querySelector("tr").appendChild(thBut)
+
+    const rows = gatnTable.querySelector("tbody").rows
+    for(let i = 0; i<rows.length; i++){
+        const row = rows[i]
+        const gatn = row.querySelector("td:nth-child(1) > a").innerText
+        const linkGVR = row.querySelector("td:nth-child(1) > a").getAttribute("href")
+        const linkAvail = row.querySelector("td:nth-child(10) > a").getAttribute("href")
+        const linkPres = row.querySelector("td:nth-child(11) > a").getAttribute("href")
+        const tdAtt = row.querySelector("td:nth-child(12) > div")
+        const linkAttArr = tdAtt ? row.querySelectorAll("td:nth-child(12) > div > a") : null
+        //console.log(linkGVR, linkAvail, linkPres)
+        const but = document.createElement("button")
+        but.setAttribute("class", "no-loader")
+        but.innerText = gatn
+        but.addEventListener("click", () => {
+            if(linkAttArr){
+                for(let i = 0; i<linkAttArr.length; i++){
+                    const linkAtt = linkAttArr[i].getAttribute("href")
+                    window.open(linkAtt)
+                }
+            }
+            const winGVR = window.open(linkGVR)
+            const winAvail = window.open(linkAvail)
+            const winPres = window.open(linkPres)
+
+            function queryInnerTextPromise(win, query){
+                return new Promise((resolve, reject) => {
+                    win.addEventListener("load", (event) =>{
+                        const result = win.document.querySelector(query).innerText.trim()
+                        resolve(result)
+                    })
+                })
+            }
+            winGVR.addEventListener("load", async (event)=> {
+                const benefName = winGVR.document.querySelector("#validation-report-view > section:nth-child(3) > div:nth-child(1) > p").innerText
+                const benefAge = winGVR.document.querySelector("#validation-report-view > section:nth-child(3) > div:nth-child(4) > div:nth-child(2) > div:nth-child(1) > p").innerText
+                const benefSex = winGVR.document.querySelector("#validation-report-view > section:nth-child(3) > div:nth-child(4) > div:nth-child(2) > div:nth-child(2) > p").innerText
+                const passGVR = checkAllPassGatn(winGVR.document)
+                //console.log(nameBenef)
+                //alert(nameBenef)
+                /**
+                const nameBenefAvailPromise = new Promise((resolve, reject) => {
+                    winAvail.addEventListener("load", (event) =>{
+                        const nameBenefAvail = winAvail.document.querySelector("#availmentForm > div:nth-child(9) > div:nth-child(1) > div:nth-child(3) > span").innerText.trim()
+                        resolve(nameBenefAvail)
+                    })
+                })
+                **/
+                const benefNameAvailPromise = queryInnerTextPromise(winAvail, "#availmentForm > div:nth-child(9) > div:nth-child(1) > div:nth-child(3) > span")
+                const nameSignAvailPromise = queryInnerTextPromise(winAvail, "#availmentNameDisplay")
+                const benefAgeAvailPromise = queryInnerTextPromise(winAvail, "#availmentForm > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > span:nth-child(2)")
+                const benefSexAvailPromise = queryInnerTextPromise(winAvail, "#availmentForm > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > span:nth-child(4)")
+                const benefAmtAvailPromise = queryInnerTextPromise(winAvail, "#availmentForm > div:nth-child(9) > div:nth-child(2) > div:nth-child(3) > span:nth-child(4)")
+                /**
+                const nameBenefPresPromise = new Promise((resolve, reject) => {
+                    winPres.addEventListener("load", (event) =>{
+                        const nameBenefPres = winPres.document.querySelector("#basic-details > div.row.no-border.mt-2 > div > div > span").innerText.trim()
+                        resolve(nameBenefPres)
+                    })
+                })
+                **/
+                const benefNamePresPromise = queryInnerTextPromise(winPres, "#basic-details > div.row.no-border.mt-2 > div > div > span")
+                const benefAgePresPromise = queryInnerTextPromise(winPres, "#basic-details > div.row.no-border.justify-content-end > div:nth-child(1) > div > span")
+                const benefSexPresPromise = queryInnerTextPromise(winPres, "#basic-details > div.row.no-border.justify-content-end > div:nth-child(2) > div > span")
+                /**
+                const nameSignAvailPromise = new Promise((resolve, reject) => {
+                    winAvail.addEventListener("load", (event) =>{
+                        const nameBenefAvail = winAvail.document.querySelector("#availmentNameDisplay").innerText.trim()
+                        resolve(nameBenefAvail)
+                    })
+                })
+                **/
+                const [benefNameAvail, nameSignAvail, benefAgeAvail, benefSexAvail, benefNamePres, benefAgePres, benefSexPres] = await Promise.all([benefNameAvailPromise, nameSignAvailPromise, benefAgeAvailPromise, benefSexAvailPromise,
+                                                                                                                        benefNamePresPromise, benefAgePresPromise,benefSexPresPromise])
+                const nameConsistent = (benefName==benefNameAvail)&&(benefName==benefNamePres)&&(benefName==nameSignAvail)
+                const ageConsistent = (benefAge==benefAgeAvail)&&(benefName==benefNamePres)
+                const sexConsistent = (benefSex==benefSexAvail)&&(benefSex==benefSexPres)
+                let strOut =
+                `${gatn}\n`+
+                `Avail Pass: ${passGVR ? "TRUE": "REVIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW"}\n`+
+                `${(Number(benefAge)<18) ? `                           MINOR BENEFICIARY Age: ${benefAge}\n` : ""}`+
+                `Name Consistent: ${nameConsistent ? "TRUE": "REVIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW"}\n`+
+                `${nameConsistent ? "" : `            GVR: ${benefName}\n            AVL: ${benefNameAvail}\n            PRS: ${benefNamePres}\n    SignAvail: ${nameSignAvail}\n`}`+
+                `Age Consistent: ${ageConsistent ? "TRUE": "REVIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW"}\n`+
+                `${ageConsistent ? "" : `   GVR: ${benefAge}\n   AVL: ${benefAgeAvail}\n   PRS: ${benefAgePres}`}`+
+                `Sex Consistent: ${sexConsistent ? "TRUE": "REVIEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEW"}\n`+
+                `${sexConsistent ? "" : `   GVR: ${benefSex}\n   AVL: ${benefSexAvail}\n   PRS: ${benefSexPres}`}`
+                console.log(strOut)
+                alert(strOut)
+            })
+            console.log(winGVR)
+        })
+        row.appendChild(but)
+    }
+}
+
+const antiInfec = ["Albendazole","Azithromycin","Azithromycin","Azithromycin","Azithromycin","Azithromycin",
+                   "Cefixime","Cefixime","Cefixime","Cefixime","Cefuroxime","Cefuroxime","Cefuroxime","Clindamycin","Clindamycin","Clindamycin","Clotrimazole","Clotrimazole","Clotrimazole","Cloxacillin","Cloxacillin",
+                   "Doxycycline",
+                   "Erythromycin","Erythromycin","Erythromycin","Erythromycin",
+                   "Fluconazole","Fluconazole","Fluconazole",
+                   "Ketoconazole","Ketoconazole","Ketoconazole","Ketoconazole","Ketoconazole",
+                   "Mebendazole","Mebendazole","Mebendazole","Mebendazole","Mebendazole","Mebendazole","Mebendazole","Metronidazole","Metronidazole","Metronidazole",
+                   "Oseltamivir",
+                   "Tobramycin","Tobramycin","Tobramycin + Dexamethasone","Tobramycin + Dexamethasone"]
+
+if(window.location.pathname.indexOf("/dashboard/claims/view/prescription")>=0 && extraFeatKo && extraFeatPres){
+    const rowsMedic = document.querySelectorAll("#medicines > div.medicine-entry")
+    for(let i = 0; i<rowsMedic.length; i++){
+        const row = rowsMedic[i]
+        const pSecond = row.querySelector("div.col-8 > p:nth-child(2)")
+        if(pSecond){
+            pSecond.setAttribute("style","font-size:1.4em")
+        }
+        const strMed = row.querySelector("div.col-8 > p:nth-child(1) > span").innerHTML
+        const antiInfecFound = antiInfec.find(function(antiInfecMed){return strMed.toLowerCase().includes(antiInfecMed.toLowerCase())})
+        if(antiInfecFound){
+            const div = row.querySelector("div.col-8")
+            const p = document.createElement("p")
+            p.innerText = "ANTI-INFECTIOUS"
+            p.setAttribute("style","font-size:2em")
+            div.appendChild(p)
+        }
+    }
+}
+
+const limitByHours = {
+    "Albendazole":744,
+    "Aluminum Hydroxide + Magnesium Hydroxide":168,
+    "Atenolol":744,
+    "Atorvastatin":744,
+    "Azithromycin":744,
+    "Budesonide + Formoterol":744,
+    "Butamirate":168,
+    "Captopril":744,
+    "Cefixime":744,
+    "Cefuroxime":744,
+    "Celecoxib":168,
+    "Cetirizine":168,
+    "Clindamycin":744,
+    "Clonidine":744,
+    "Clopidogrel":744,
+    "Clotrimazole":744,
+    "Cloxacillin":744,
+    "Colchicine":744,
+    "Dapagliflozin":744,
+    "Diltiazem":744,
+    "Diphenhydramine":168,
+    "Doxycycline":744,
+    "Enalapril + Hydrochlorothiazide":744,
+    "Erythromycin":744,
+    "Fenofibrate":744,
+    "Fluconazole":744,
+    "Folic Acid + Iron Ferrous":744,
+    "Gabapentin":744,
+    "Ibuprofen":168,
+    "Ipratropium":744,
+    "Ipratropium + Salbutamol":744,
+    "Iron (Ferrous Salt)":744,
+    "Isosorbide Dinitrate":744,
+    "Isosorbide Mononitrate":744,
+    "Ketoconazole":744,
+    "Loratadine":168,
+    "Losartan + Hydrochlorothiazide":744,
+    "Mebendazole":744,
+    "Mefenamic Acid":168,
+    "Methyldopa":744,
+    "Metronidazole":744,
+    "Montelukast":744,
+    "Naproxen":168,
+    "Omeprazole":336,
+    "Oseltamivir":744,
+    "Rosuvastatin":744,
+    "Tamsulosin":744,
+    "Telmisartan":744,
+    "Telmisartan + Hydrochlorothiazide":744,
+    "Tiotropium":744,
+    "Tobramycin":744,
+    "Tobramycin + Dexamethasone":744,
+    "Valsartan":744,
+    "Valsartan + Hydrochlorothiazide":744,
+    "Vitex Negundo (Lagundi)":168,
+    "Zinc":336,
+    "Chlorphenamine":168,
+    "Paracetamol":168,
+    "Prednisone":336
+}
+
+if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 && extraFeatKo && extraFeatAvail){
+    const columnko = 4
+    const days = true
+    const thko = document.createElement("th")
+    thko.innerText = `Dispensing Limit (${days?"days":"hours"})`
+    const table = document.querySelector("#table-container > table")
+    const theadRow = table.querySelector("thead > tr")
+    theadRow.insertBefore(thko, theadRow.children[columnko])
+    const tBodyRows = table.querySelector("tbody").rows
+    console.log(tBodyRows)
+    const limitByHoursKeys = Object.keys(limitByHours)
+    for(let i = 0; i<tBodyRows.length; i++){
+        const row = tBodyRows[i]
+        const tdFirst = row.querySelector("td:nth-child(1)")
+        if(!tdFirst){
+            continue
+        }
+        if(tdFirst.innerText === "" || Number.isNaN(Number(tdFirst.innerText))){
+            tdFirst.setAttribute("colspan", 5)
+            continue
+        }
+        const strMed = row.querySelector("td:nth-child(2)").innerText
+        const strQuant = row.querySelector("td:nth-child(4)").innerText
+
+        const medName = limitByHoursKeys.find((med)=>{return strMed.toLowerCase().includes(med.toLowerCase())})
+        const limitHour = limitByHours[medName]
+        const tdko = document.createElement("td")
+        const numLimitDays = (limitHour/24)
+        tdko.innerText = days ? numLimitDays : limitHour
+        const numQuant = Number(strQuant)
+        if(numQuant>numLimitDays){
+            const hardLimitMulti = 4
+            let color = "lightpink"
+            /**
+            const gcd = (a, b) => b === 0 ? Math.abs(a) : gcd(b, a % b)
+            if(numQuant>(numLimitDays*hardLimitMulti) || gcd(numQuant, numLimitDays==31?30:numLimitDays)<=1){
+                color = "red"
+            }
+            **/
+            if(numQuant>(numLimitDays*hardLimitMulti)){
+                if(numQuant>=100){
+                    color = "red"
+                }
+            }
+            row.setAttribute("style",`background-color:${color}`)
+        }
+        row.insertBefore(tdko, row.children[columnko])
+    }
+}
+
+
+
+
+
+
+
+
+
