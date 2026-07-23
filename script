@@ -30,14 +30,15 @@
 
 //config
 //vr
+const enableName = false
 const name = "Insert Name Here"
 const fontSize = 12
 //f10
-const enableF10Auto = false
+const enableF10Auto = true
 
 // VR Name and Date
 const buttonPrintVR = document.querySelector("#print_div > input[type=button]")
-if(buttonPrintVR){
+if(buttonPrintVR && enableName){
    const dateToday = new Date()
    const day = dateToday.getDate()
    const month = dateToday.toLocaleString('default', {month:'short'})
