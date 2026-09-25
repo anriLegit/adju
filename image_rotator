@@ -9,10 +9,13 @@
 // @grant        none
 // ==/UserScript==
 
+const degChange = 45
+const keyLeft = "a"
+const keyRight = "d"
+
 const imgSelector = "img"
 const rotateProp = "rotate"
 const degSuff = "deg"
-const degChange = 45
 
 const styleEl = document.createElement("style");
 // Append <style> element to <head>
@@ -46,11 +49,11 @@ for(let i = 0; i<cssRules.length; i++){
     }
     window.addEventListener("keypress", (e)=>{
         switch(e.key){
-            case "a":
-                rotate(-degChange)
-                break;
-            case "d":
+            case keyLeft:
                 rotate(degChange)
+                break;
+            case keyRight:
+                rotate(-degChange)
                 break;
         }
     })
