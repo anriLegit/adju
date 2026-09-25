@@ -1,0 +1,58 @@
+// ==UserScript==
+// @name         image rotator
+// @namespace    http://tampermonkey.net/
+// @version      2026-09-25
+// @description  try to take over the world!
+// @author       You
+// @match        file:///*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=undefined.
+// @grant        none
+// ==/UserScript==
+
+const imgSelector = "img"
+const rotateProp = "rotate"
+const degSuff = "deg"
+const degChange = 45
+
+const styleEl = document.createElement("style");
+// Append <style> element to <head>
+document.head.appendChild(styleEl);
+
+// Grab style element's sheet
+const styleSheet = styleEl.sheet;
+
+styleSheet.insertRule(
+  `${imgSelector} {${rotateProp}: 0${degSuff} }`
+);
+
+const cssRules = styleSheet.cssRules
+
+for(let i = 0; i<cssRules.length; i++){
+    const cssRule = cssRules[i]
+    if(cssRule.selectorText!=imgSelector){
+        continue
+    }
+    const declaration = cssRule.style
+    function rotate(degChange){
+        console.log("rotating")
+        let degCurr = declaration.getPropertyValue(rotateProp)
+        console.log(degCurr)
+        degCurr = Number(degCurr.replace(degSuff,""))
+        if(Math.abs(degCurr) >= 360){
+            degCurr = 0
+        }
+        //img.style.rotate = `${degCurr+degChange}deg`
+        declaration.setProperty(rotateProp, `${degCurr+degChange}${degSuff}`)
+    }
+    window.addEventListener("keypress", (e)=>{
+        switch(e.key){
+            case "a":
+                rotate(-degChange)
+                break;
+            case "d":
+                rotate(degChange)
+                break;
+        }
+    })
+}
+
