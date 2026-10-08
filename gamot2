@@ -339,6 +339,40 @@ if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 
         console.log(`Duplicate: ${[...medsDuplSet]}`)
         alert(outStrDup)
     }
+
+    //check oop
+    const total = Number(table.querySelector("tbody > tr:nth-last-child(3) > td:nth-child(2)").innerText.replace("₱", ""))
+    const amtcovered = Number(table.querySelector("tbody > tr:nth-last-child(2) > td:nth-child(2)").innerText.replace("₱", ""))
+    const paidOOP = document.querySelector("#yesMeron").checked
+    const amtOOP = document.querySelector("#availmentForm > section:nth-child(15) > div > div:nth-child(2) > span > span").innerText
+    if(total==amtcovered){
+        let outStrOOP = ""
+        if(paidOOP){
+            outStrOOP = outStrOOP + "Lahat Covered pero naka check ang OOP\n"
+        }
+        if(amtOOP!="N/A"){
+            outStrOOP = outStrOOP + "Lahat Covered pero hindi N/A ang OOP amount\n"
+        }
+        if(outStrOOP!=""){
+            alert(outStrOOP)
+        }
+    }else{
+        let outStrOOP = ""
+        if(!paidOOP){
+            outStrOOP = outStrOOP + "Hindi lahat Covered pero hindi naka check ang OOP\n"
+        }
+        if(amtOOP=="N/A"){
+            outStrOOP = outStrOOP + "Hindi lahat Covered pero  N/A ang OOP amount\n"
+        }else{
+            const notCovered = total-amtcovered
+            if(notCovered!=Number(amtOOP.replace("₱", ""))){
+                outStrOOP = outStrOOP + "Kulang OOP amount\n"
+            }
+        }
+        if(outStrOOP!=""){
+            alert(outStrOOP)
+        }
+    }
 }
 
 
