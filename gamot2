@@ -198,6 +198,12 @@ function isAntiInfec(strMed){
     return antiInfec.find(function(antiInfecMed){return strMed.toLowerCase().includes(antiInfecMed.toLowerCase())})
 }
 
+const specialForms = ["Fluticasone", "Ipratropium", "Ketoconazole", "Salbutamol", "Tiotropium", "Tobramycin"]
+
+function maybeSpecialForm(strMed){
+    return specialForms.find(function(specialMed){return strMed.toLowerCase().includes(specialMed.toLowerCase())})
+}
+
 if(window.location.pathname.indexOf("/dashboard/claims/view/prescription")>=0 && extraFeatKo && extraFeatPres){
     const rowsMedic = document.querySelectorAll("#medicines > div.medicine-entry")
     for(let i = 0; i<rowsMedic.length; i++){
@@ -282,9 +288,8 @@ const limitByHours = {
 
 if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 && extraFeatKo && extraFeatAvail){
     const columnko = 4
-    const days = true
     const thko = document.createElement("th")
-    thko.innerText = `Dispensing Limit (${days?"days":"hours"})`
+    thko.innerText = `Dispensing Limit (${"days"})`
     const table = document.querySelector("#table-container > table")
     const theadRow = table.querySelector("thead > tr")
     theadRow.insertBefore(thko, theadRow.children[columnko])
@@ -313,8 +318,9 @@ if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 
         const limitHour = limitByHours[medName]
         const tdko = document.createElement("td")
         const antiInfecFound = isAntiInfec(strMed)
-        const numLimitDays = antiInfecFound ? 14: (limitHour/24)
-        tdko.innerText = days ? numLimitDays : limitHour
+        const mightBeSpecialForm = maybeSpecialForm(strMed)
+        const numLimitDays = mightBeSpecialForm ? "Check Policy" : antiInfecFound ? 14: (limitHour/24)
+        tdko.innerText = numLimitDays
         const numQuant = Number(strQuant)
         if(antiInfecFound){
             color = "lightblue"
@@ -359,10 +365,10 @@ if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 
     }else{
         let outStrOOP = ""
         if(!paidOOP){
-            outStrOOP = outStrOOP + "Hindi lahat Covered pero hindi naka check ang OOP\n"
+            outStrOOP = outStrOOP + "Hindi parehas ang covered at total pero hindi naka check ang OOP\n"
         }
         if(amtOOP=="N/A"){
-            outStrOOP = outStrOOP + "Hindi lahat Covered pero  N/A ang OOP amount\n"
+            outStrOOP = outStrOOP + "Hindi parehas ang covered at total pero  N/A ang OOP amount\n"
         }else{
             const notCovered = total-amtcovered
             if(notCovered!=Number(amtOOP.replace("₱", ""))){
@@ -374,10 +380,3 @@ if(window.location.pathname.indexOf("/dashboard/claims/view/availment_form")>=0 
         }
     }
 }
-
-
-
-
-
-
-
